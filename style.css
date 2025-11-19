@@ -43,6 +43,24 @@ body{
 .btn-primary{background:var(--blue);color:#fff}
 .btn-secondary{background:var(--yellow);color:#000}
 .btn-ghost{background:transparent;color:var(--blue)}
+.btn-edit{background:var(--yellow);color:#000}
+
+/* Admin bar */
+.admin-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:.45rem 1.1rem;
+  background:#020617;
+  color:#fff;
+}
+.brand-chip{display:flex;gap:.25rem}
+.chip{width:13px;height:13px;border-radius:50%}
+.chip-yellow{background:var(--yellow)}
+.chip-blue{background:var(--blue)}
+.chip-red{background:var(--red)}
+.admin-actions{display:flex;gap:.6rem;align-items:center}
+.admin-label{font-size:.85rem;opacity:.9}
 
 /* Header */
 .site-header{
@@ -263,6 +281,13 @@ body{
 .photo-card{
   box-shadow:0 16px 30px rgba(0,0,0,.1);
 }
+.photo-help{
+  font-size:.85rem;
+  color:var(--muted);
+  margin-bottom:.45rem;
+}
+
+/* Foto general */
 .hero-img{
   width:100%;
   height:260px;
@@ -270,6 +295,12 @@ body{
   border-radius:14px;
   background:#e5e7eb;
   border:1px dashed #cbd5e1;
+}
+.upload-actions{
+  display:flex;
+  gap:.5rem;
+  justify-content:flex-end;
+  margin-top:.6rem;
 }
 
 /* Barra de avance */
@@ -302,25 +333,47 @@ body{
   margin-bottom:.4rem;
 }
 
-/* Contenedor controlado para las gráficas */
-.chart-wrapper{
+/* Recuadro fijo para TODAS las gráficas */
+canvas{
+  width:100% !important;      /* ocupa todo el ancho del bloque */
+  max-width:100%;
+  height:260px !important;    /* alto fijo → no se estira infinito */
+}
+
+/* Sectores con muchos indicadores: un poquito más alto */
+#eduChart,
+#ecoChart{
+  height:320px !important;
+}
+
+
+/* Recuadro fijo para TODAS las gráficas */
+.chart-box{
   width:100%;
   max-width:100%;
-  height:260px;
-  position:relative;
+  height:220px;          /* altura fija del área de gráfico */
+  max-height:220px;
+  padding:.25rem 0 .5rem;
 }
-.chart-wrapper.chart-tall{
-  height:320px;
-}
-.chart-wrapper.chart-short{
-  height:220px;
-}
-.chart-wrapper.chart-wide{
-  height:260px;
-}
-.chart-wrapper canvas{
+
+canvas{
   width:100% !important;
-  height:100% !important;
+  max-width:100%;
+  max-height:320px; /* límite en vez de altura fija */
+}
+
+/* si quieres dar un poquito más de espacio a los sectores grandes: */
+#eduChart,
+#ecoChart{
+  max-height:360px;
+}
+
+/* Texto de ayuda bajo gráfico */
+.chart-help{
+  margin:0;
+  margin-top:.15rem;
+  font-size:.85rem;
+  color:var(--muted);
 }
 
 /* Panel head (sector) */
@@ -373,6 +426,11 @@ body{
   background:#e5e7eb;
   border:1px solid #cbd5e1;
 }
+.btn-photo{
+  padding:.2rem .5rem;
+  font-size:.72rem;
+  line-height:1;
+}
 .consej-data .consej-name{
   font-weight:700;
   font-size:.95rem;
@@ -413,6 +471,47 @@ body{
   font-size:.9rem;
   color:#111827;
 }
+.ind-tabs{
+  display:flex;
+  gap:.4rem;
+}
+.ind-btn{
+  flex:1;
+  background:var(--soft);
+  border-radius:11px;
+  border:1px solid var(--ring);
+  padding:.4rem .6rem;
+  font-size:.9rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:background .15s ease, transform .15s ease;
+}
+.ind-btn:hover{
+  transform:translateY(-1px);
+}
+.ind-btn.active{
+  background:var(--yellow);
+  border-color:var(--yellow);
+  color:#111827;
+}
+.ind-body{
+  border-radius:12px;
+  border:1px solid var(--ring);
+  padding:.7rem .75rem;
+  font-size:.9rem;
+  line-height:1.3rem;
+}
+.ind-body.avance{
+  background:#edf9f2;
+  border-color:rgba(31,137,71,.25);
+  color:#075e33;
+}
+.ind-body.alerta{
+  background:#fef2f2;
+  border-color:rgba(206,17,38,.25);
+  color:#991b1b;
+  display:none;
+}
 
 /* Comentarios y recomendaciones */
 .comment-list{
@@ -439,6 +538,24 @@ body{
   font-size:.9rem;
 }
 
+/* Edit mode visual */
+.editable-on{
+  outline:2px dashed var(--yellow);
+  outline-offset:2px;
+  background:#fffef3;
+}
+
+/* Panel edición numérica */
+.edit-panel{
+  display:none;
+  gap:.6rem;
+  flex-wrap:wrap;
+  margin:.65rem 0 .4rem;
+  font-size:.9rem;
+}
+.edit-panel label{display:flex;gap:.3rem;align-items:center}
+.edit-panel input[type="number"]{width:95px}
+
 /* Territoriales: dos cuadros de texto */
 .terr-perspectivas .block{
   min-height:180px;
@@ -462,4 +579,59 @@ body{
   .general-side{
     position:static;
   }
+}
+/* === Gráficas: contenedor y canvas nítidos === */
+.chart-box {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  height: 320px;
+}
+
+.chart-box canvas,
+.chart-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .chart-box {
+    height: 260px;
+  }
+}
+
+/* Tarjetas de indicadores (simple y legible) */
+.indicator-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.indicator-card {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.indicator-code {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0033a0;
+  margin: 0 0 0.25rem;
+}
+
+.indicator-name {
+  font-size: 0.8rem;
+  color: #475569;
+  margin: 0 0 0.25rem;
+}
+
+.indicator-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
 }
